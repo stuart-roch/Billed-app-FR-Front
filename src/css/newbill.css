@@ -61,3 +61,19 @@ textarea:focus, input:focus, select:focus {
 *[placeholder] {
   color: #0E5AE5 !important;
 }
+
+div[data-error-msg]::after{
+  content: attr(data-error-msg);
+  font-size: 0.8em;
+  color: #e54858;
+  display: block;
+  margin-top: 7px;
+  margin-bottom: 7px;
+  line-height: 1;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+div[data-error-visible="true"]::after{
+  opacity: 1;
+}
