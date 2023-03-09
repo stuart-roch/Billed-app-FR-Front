@@ -20,6 +20,7 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
+  //data.sort((a,b) => a.date < b.date ? 1 : -1);
   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
 }
 
@@ -47,7 +48,9 @@ export default ({ data: bills, loading, error }) => {
   } else if (error) {
     return ErrorPage(error)
   }
-
+  const filteredBills = (bills) => bills.sort((a,b) => a.date < b.date ? 1 : -1)
+  filteredBills(bills)
+  //bills.sort((a,b) => a.date < b.date ? 1 : -1);
   return (`
     <div class='layout'>
       ${VerticalLayout(120)}
@@ -69,7 +72,7 @@ export default ({ data: bills, loading, error }) => {
               </tr>
           </thead>
           <tbody data-testid="tbody">
-            ${rows(bills.sort((a,b) => a.date < b.date ? 1 : -1))}
+            ${rows(bills)}
           </tbody>
           </table>
         </div>

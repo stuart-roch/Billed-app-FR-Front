@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 
-import {fireEvent, screen, waitFor} from "@testing-library/dom"
+import {screen, waitFor} from "@testing-library/dom"
 import '@testing-library/jest-dom/extend-expect'
 import userEvent from '@testing-library/user-event'
 import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
-import { ROUTES_PATH} from "../constants/routes.js";
+import { ROUTES,ROUTES_PATH} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import Bills from "../containers/Bills.js"
 
@@ -41,13 +41,26 @@ describe("Given I am connected as an employee", () => {
     })
   })
   describe("When I click on eye icon", () => {
-    test("Then I should see a modal with an image of the bill justification", () => {
-      document.body.innerHTML = BillsUI({ data: bills })
-      const bill = new Bills(document, onNavigate, null, window.localStorage)
+    test("Then I should see a modal with an image of the bill justification", async () => {
+      /*document.body.innerHTML = BillsUI({ data: bills })
+      const bill = new Bills(screen, onNavigate, null, window.localStorage)*/
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+
+      document.body.innerHTML=BillsUI({data:bills})
+      
+      await waitFor(() => document.querySelectorAll("div[data-testid='icon-eye'"))
+      const bill = new Bills({document, onNavigate,store: null, localStorage:window.localStorage})
       const eyeIcons=document.querySelectorAll("div[data-testid='icon-eye'")
       eyeIcons.forEach(eyeIcon => {
         const handleClickIconEye = jest.fn((e) => bill.handleClickIconEye(eyeIcon))
-        eyeIcon.addEventListener(handleClickIconEye)
+        eyeIcon.addEventListener('click',handleClickIconEye)
         userEvent.click(eyeIcon)
         expect(handleClickIconEye).toHaveBeenCalled()
       })
